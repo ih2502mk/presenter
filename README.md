@@ -1,5 +1,4 @@
-A tool to show presentations with separations concerns in mind
-==============================================================
+A modular tool to show presentations with
+=========================================
 
-Main goal is to explore modularity in JS fronted.
- 
+Main goal is to explore modularity and separation of concerns in javaScript fronted applications.
