@@ -131,7 +131,7 @@
     $.each(collection, function(i){
       var item = $('<li>')
         .addClass('nav-item')
-        .text("#" + (i + 1))
+        .text("#" + (i))
         .data({'itemNum' : i});
       indexItems.push(item);
     });
@@ -222,15 +222,54 @@
     }
   }
   
-  Nav.prototype.watchHash = function(activator) {
-    
-  }
-  
   /**
    * Навигация тоже должна быть одна на странице.
    */
   var nav = new Nav();
   
+  /**
+   * Конструктор объекта слежения за урл хешем
+   */
+  function Hash() {
+    this.watchable = false;
+  }
+  
+  /**
+   * Установщик значения
+   */
+  Hash.prototype.indicate = function(nGetter) {
+    var self = this;
+    
+    var n = false;
+    if(typeof nGetter === 'function') {
+      n = nGetter();
+    }
+    else {
+      n = nGetter;
+    }
+
+    self.watchable = false;
+
+    location.hash = "slide=" + n;
+
+    self.watchable = true;
+  }
+
+  Hash.prototype.getNumber = function() {
+    var n = parseInt(location.hash.slice(1).split('=')[1], 10)
+    return !isNaN(n) ? n : 0;
+  }
+
+  Hash.prototype.setup = function (activator) {
+    var self = this;
+    window.onhashchange = function(){
+      if (self.watchable) {
+        activator(self.getNumber());
+      }
+    }
+  }
+
+  var hash = new Hash();
   
   /**
    * Инициализация и связывание всего.
@@ -250,24 +289,34 @@
       //Создаем виджет навигации
       nav.indexWidgetCreate(function(n){
         slider.show(n);
+        hash.indicate(n);
       })
       //Привязываем клавиатуру
       nav.keyBoard({
         'space, enter, right' : function(){
           slider.next();
+          hash.indicate(slider.shown);
         },
         'left' : function(){
           slider.prev();
+          hash.indicate(slider.shown);
         }
       },
       function() {
         return slider.shown;
       });
+
+      hash.setup(function(n) {
+        if(!isNaN(n)) {
+          slider.show(n);
+          nav.indicate(n);
+        }
+      });
       
       //Показываем первый слайд
       slider.fit();
-      slider.show(0);
-      nav.indicate(0);
+      slider.show(hash.getNumber());
+      nav.indicate(hash.getNumber());
       
       return this; //Maintain chainability
     }

@@ -63,3 +63,8 @@ ul.nav-index li.nav-item.active {
   color: #77d;
   border: 1px solid #55d;
 }
+
+.number {
+  font-size: 3em;
+  text-align: center;
+}
